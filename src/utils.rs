@@ -66,17 +66,38 @@ pub fn mat3_rot_from_axis_angle_vec(vec: &[f64; 3]) -> [[f64; 3]; 3] {
 }
 
 pub fn volume_tet<T>(v0: [T; 3], v1: [T; 3], v2: [T; 3], v3: [T; 3]) -> T
-where T: Copy + std::ops::Sub<Output=T> + std::ops::Mul<f64, Output=T> + std::ops::Mul<Output=T> + std::ops::Add<Output=T>
+where
+    T: Copy
+        + std::ops::Sub<Output = T>
+        + std::ops::Mul<f64, Output = T>
+        + std::ops::Mul<Output = T>
+        + std::ops::Add<Output = T>,
 {
-    let v = (v1[0] - v0[0]) * ((v2[1] - v0[1]) * (v3[2] - v0[2]) - (v3[1] - v0[1]) * (v2[2] - v0[2]))
+    let v = (v1[0] - v0[0])
+        * ((v2[1] - v0[1]) * (v3[2] - v0[2]) - (v3[1] - v0[1]) * (v2[2] - v0[2]))
         + (v1[1] - v0[1]) * ((v2[2] - v0[2]) * (v3[0] - v0[0]) - (v3[2] - v0[2]) * (v2[0] - v0[0]))
         + (v1[2] - v0[2]) * ((v2[0] - v0[0]) * (v3[1] - v0[1]) - (v3[0] - v0[0]) * (v2[1] - v0[1]));
 
     v * 0.16666666666666666666666666666667
 }
 
-pub fn random_vec() -> [f64;3] {
+pub fn random_vec() -> [f64; 3] {
     let mut rng = rand::thread_rng();
     let uni_dist = rand::distributions::Uniform::new(0.0, 1.0);
-    [uni_dist.sample(&mut rng), uni_dist.sample(&mut rng), uni_dist.sample(&mut rng)]
+    [
+        uni_dist.sample(&mut rng),
+        uni_dist.sample(&mut rng),
+        uni_dist.sample(&mut rng),
+    ]
+}
+
+pub fn mat_vec3<T>(m: &[[T; 3]; 3], v: &[T; 3]) -> [T; 3]
+where
+    T: Add<Output = T> + Mul<Output = T> + Copy,
+{
+    [
+        m[0][0] * v[0] + m[0][1] * v[1] + m[0][2] * v[2],
+        m[1][0] * v[0] + m[1][1] * v[1] + m[1][2] * v[2],
+        m[2][0] * v[0] + m[2][1] * v[1] + m[2][2] * v[2],
+    ]
 }
