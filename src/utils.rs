@@ -5,7 +5,7 @@ use rand::{self, prelude::Distribution};
 pub fn random_2d_matrix<T, const N: usize, const M: usize>(
     a: &mut [[T; M]; N],
     dist: &mut rand::distributions::Uniform<f64>,
-    rng: &mut rand::prelude::ThreadRng,
+    rng: &mut rand::rngs::StdRng,
     mag: T,
     offset: T,
 ) where
@@ -89,6 +89,20 @@ pub fn random_vec() -> [f64; 3] {
         uni_dist.sample(&mut rng),
         uni_dist.sample(&mut rng),
     ]
+}
+
+pub fn add_vec<T>(a: [T; 3], b: [T; 3]) -> [T; 3]
+where
+    T: Copy + Add<Output = T>,
+{
+    [a[0] + b[0], a[1] + b[1], a[2] + b[2]]
+}
+
+pub fn scale_vec<T>(a: [T; 3], b: T) -> [T; 3]
+where
+    T: Copy + Mul<Output = T>,
+{
+    [a[0] * b, a[1] * b, a[2] * b]
 }
 
 pub fn mat_vec3<T>(m: &[[T; 3]; 3], v: &[T; 3]) -> [T; 3]

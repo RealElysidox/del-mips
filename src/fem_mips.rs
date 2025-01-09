@@ -42,18 +42,19 @@ pub fn wdwddw_mips(
     let area = n.norm() * 0.5;
     let area_cap = ((p_cap1 - p_cap0).cross(&(p_cap2 - p_cap0))).norm() * 0.5;
 
-    let la = (p1 - p2).dot(&(p1 - p2));
-    let lb = (p2 - p0).dot(&(p2 - p0));
-    let lc = (p0 - p1).dot(&(p0 - p1));
-    let la_cap = (p_cap1 - p_cap2).dot(&(p_cap1 - p_cap2));
-    let lb_cap = (p_cap2 - p_cap0).dot(&(p_cap2 - p_cap0));
-    let lc_cap = (p_cap0 - p_cap1).dot(&(p_cap0 - p_cap1));
+    let la = (p1 - p2).norm_squared();
+    let lb = (p2 - p0).norm_squared();
+    let lc = (p0 - p1).norm_squared();
+    let la_cap = (p_cap1 - p_cap2).norm_squared();
+    let lb_cap = (p_cap2 - p_cap0).norm_squared();
+    let lc_cap = (p_cap0 - p_cap1).norm_squared();
 
     let cot0 = -la + lb + lc;
     let cot1 = la - lb + lc;
     let cot2 = la + lb - lc;
 
     let tmp0 = 1.0 / (8.0 * area_cap);
+
     let ec = (cot0 * la_cap + cot1 * lb_cap + cot2 * lc_cap) * tmp0;
 
     let t00 = 4.0 * la_cap * tmp0;
