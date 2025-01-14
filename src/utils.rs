@@ -1,6 +1,6 @@
-use std::ops::{Add, Mul};
+use std::ops::{Add, Mul, Sub};
 
-use rand::{self, prelude::Distribution};
+use rand::{self, prelude::Distribution, SeedableRng};
 
 pub fn random_2d_matrix<T, const N: usize, const M: usize>(
     a: &mut [[T; M]; N],
@@ -82,7 +82,7 @@ where
 }
 
 pub fn random_vec() -> [f64; 3] {
-    let mut rng = rand::thread_rng();
+    let mut rng = rand::rngs::StdRng::seed_from_u64(1926);
     let uni_dist = rand::distributions::Uniform::new(0.0, 1.0);
     [
         uni_dist.sample(&mut rng),
@@ -91,14 +91,21 @@ pub fn random_vec() -> [f64; 3] {
     ]
 }
 
-pub fn add_vec<T>(a: [T; 3], b: [T; 3]) -> [T; 3]
+pub fn add_vec<T>(a: &[T; 3], b: &[T; 3]) -> [T; 3]
 where
     T: Copy + Add<Output = T>,
 {
     [a[0] + b[0], a[1] + b[1], a[2] + b[2]]
 }
 
-pub fn scale_vec<T>(a: [T; 3], b: T) -> [T; 3]
+pub fn sub_vec<T>(a: &[T; 3], b: &[T; 3]) -> [T; 3]
+where
+    T: Copy + Sub<Output = T>,
+{
+    [a[0] - b[0], a[1] - b[1], a[2] - b[2]]
+}
+
+pub fn scale_vec<T>(a: &[T; 3], b: T) -> [T; 3]
 where
     T: Copy + Mul<Output = T>,
 {
@@ -114,4 +121,73 @@ where
         m[1][0] * v[0] + m[1][1] * v[1] + m[1][2] * v[2],
         m[2][0] * v[0] + m[2][1] * v[1] + m[2][2] * v[2],
     ]
+}
+
+pub fn inverse_mat3(mat: &[[f64; 3]; 3]) -> [[f64; 3]; 3] {
+    let det = mat[0][0] * (mat[1][1] * mat[2][2] - mat[1][2] * mat[2][1])
+        - mat[0][1] * (mat[1][0] * mat[2][2] - mat[1][2] * mat[2][0])
+        + mat[0][2] * (mat[1][0] * mat[2][1] - mat[1][1] * mat[2][0]);
+    let inv_det = 1.0 / det;
+    [
+        [
+            (mat[1][1] * mat[2][2] - mat[1][2] * mat[2][1]) * inv_det,
+            (mat[0][2] * mat[2][1] - mat[0][1] * mat[2][2]) * inv_det,
+            (mat[0][1] * mat[1][2] - mat[0][2] * mat[1][1]) * inv_det,
+        ],
+        [
+            (mat[1][2] * mat[2][0] - mat[1][0] * mat[2][2]) * inv_det,
+            (mat[0][0] * mat[2][2] - mat[0][2] * mat[2][0]) * inv_det,
+            (mat[0][2] * mat[1][0] - mat[0][0] * mat[1][2]) * inv_det,
+        ],
+        [
+            (mat[1][0] * mat[2][1] - mat[1][1] * mat[2][0]) * inv_det,
+            (mat[0][1] * mat[2][0] - mat[0][0] * mat[2][1]) * inv_det,
+            (mat[0][0] * mat[1][1] - mat[0][1] * mat[1][0]) * inv_det,
+        ],
+    ]
+}
+
+pub fn mul_mat3x3(mat1: &[[f64; 3]; 3], mat2: &[[f64; 3]; 3]) -> [[f64; 3]; 3] {
+    let mut result = [[0.0; 3]; 3];
+    for i in 0..3 {
+        for j in 0..3 {
+            for k in 0..3 {
+                result[i][j] += mat1[i][k] * mat2[k][j];
+            }
+        }
+    }
+    result
+}
+
+pub fn mat3_from_3basis(v0: &[f64; 3], v1: &[f64; 3], v2: &[f64; 3]) -> [[f64; 3]; 3] {
+    [[v0[0], v1[0], v2[0]], [v0[1], v1[1], v2[1]], [v0[2], v1[2], v2[2]]]
+}
+
+pub fn transpose_mat3x3(mat: &[[f64; 3]; 3]) -> [[f64; 3]; 3] {
+    [
+        [mat[0][0], mat[1][0], mat[2][0]],
+        [mat[0][1], mat[1][1], mat[2][1]],
+        [mat[0][2], mat[1][2], mat[2][2]],
+    ]
+}
+
+pub fn trace_mat3x3(mat: &[[f64; 3]; 3]) -> f64 {
+    mat[0][0] + mat[1][1] + mat[2][2]
+}
+
+pub fn mul_scalar_mat3x3(scalar: f64, mat: &[[f64; 3]; 3]) -> [[f64; 3]; 3] {
+    [
+        [scalar * mat[0][0], scalar * mat[0][1], scalar * mat[0][2]],
+        [scalar * mat[1][0], scalar * mat[1][1], scalar * mat[1][2]],
+        [scalar * mat[2][0], scalar * mat[2][1], scalar * mat[2][2]],
+    ]
+}
+
+pub fn sub_mat3x3(mat1: &[[f64; 3]; 3], mat2: &[[f64; 3]; 3]) -> [[f64; 3]; 3] {
+    [
+        [mat1[0][0] - mat2[0][0], mat1[0][1] - mat2[0][1], mat1[0][2] - mat2[0][2]],
+        [mat1[1][0] - mat2[1][0], mat1[1][1] - mat2[1][1], mat1[1][2] - mat2[1][2]],
+        [mat1[2][0] - mat2[2][0], mat1[2][1] - mat2[2][1], mat1[2][2] - mat2[2][2]],
+    ]
+    
 }

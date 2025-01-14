@@ -4,8 +4,12 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+# del-geo-core = { git = "https://github.com/nobuyuki83/del-geo.git"}
 nalgebra = "0.33.2"
 rand = "0.8.5"
+
+# for development
+del-geo-core = { path = "../del-geo/del-geo-core" }
 
 [dev-dependencies]
 rand_chacha = "0.3.1"
