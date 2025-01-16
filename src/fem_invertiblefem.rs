@@ -132,12 +132,7 @@ pub fn wdwddw_invertible_fem(
         &pos_ref[3],
     );
 
-    let dfdu = diff_deformation_gradient_of_tet(
-        &pos_ref[0],
-        &pos_ref[1],
-        &pos_ref[2],
-        &pos_ref[3],
-    );
+    let dfdu = diff_deformation_gradient_of_tet(&pos_ref[0], &pos_ref[1], &pos_ref[2], &pos_ref[3]);
 
     let (u0, s0, v0) = svd(&f0, 30);
     let diff = svd_differential(u0, s0, v0);

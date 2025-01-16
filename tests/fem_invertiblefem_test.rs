@@ -1,5 +1,4 @@
 #[allow(unused_variables)]
-
 #[cfg(test)]
 mod tests {
     use del_geo_core::mat3_row_major::*;
