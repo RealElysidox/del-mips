@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+  pull_request:
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+
+    - name: Cargo commands
+      run: |
+        cargo fmt --check
+        cargo clippy -- -D warnings
+        cargo build --release
+        cargo test --release
+        RUSTDOCFLAGS="-D warnings" cargo doc --release
+
+    - run: |
+        echo ${{ github.ref }}
+
+  windows:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+
+    - name: Cargo commands
+      run: |
+        cargo fmt --check
+        cargo clippy -- -D warnings
+        cargo build --release
+        cargo test --release
+        $Env:RUSTDOCFLAGS="-D warnings"
+        cargo doc --release
+      shell: pwsh
+
+    - run: echo ${{ github.ref }}
+
+  macos:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+    - name: Cargo commands
+      run: |
+        cargo fmt --check
+        cargo clippy -- -D warnings
+        cargo build --release
+        cargo test --release
+        RUSTDOCFLAGS="-D warnings" cargo doc --release
+    - run: echo ${{ github.ref }}

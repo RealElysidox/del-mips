@@ -1,3 +1,5 @@
+#![allow(non_snake_case)]
+
 use del_geo_core::mat3_col_major::Mat3ColMajor;
 use del_geo_core::mat3_row_major::*;
 use del_geo_core::vec3::*;
@@ -38,7 +40,6 @@ fn deformation_gradient_of_tet(
 }
 
 fn diff_deformation_gradient_of_tet(
-    dfdu: &mut [[f64; 3]; 4],
     pos0: &[f64; 3],
     pos1: &[f64; 3],
     pos2: &[f64; 3],
@@ -85,16 +86,10 @@ pub fn diff_piola_kirchhoff1st(
     let mut dpdf = [[[[0.0; 3]; 3]; 3]; 3];
     for i in 0..3 {
         for j in 0..3 {
-            let du = u0.mult_mat_row_major(&skew(&[
-                -diff[0][i][j],
-                -diff[1][i][j],
-                -diff[2][i][j],
-            ]));
-            let dv = v0.mult_mat_row_major(&skew(&[
-                -diff[6][i][j],
-                -diff[7][i][j],
-                -diff[8][i][j],
-            ]));
+            let du =
+                u0.mult_mat_row_major(&skew(&[-diff[0][i][j], -diff[1][i][j], -diff[2][i][j]]));
+            let dv =
+                v0.mult_mat_row_major(&skew(&[-diff[6][i][j], -diff[7][i][j], -diff[8][i][j]]));
             let ds = Mat3::from_diagonal(&[diff[3][i][j], diff[4][i][j], diff[5][i][j]]);
 
             let t0_0 = ddwddl0[0][0] * ds[0] + ddwddl0[0][1] * ds[4] + ddwddl0[0][2] * ds[8];
@@ -137,9 +132,7 @@ pub fn wdwddw_invertible_fem(
         &pos_ref[3],
     );
 
-    let mut dfdu: [[f64; 3]; 4] = [[0.0; 3]; 4];
-    diff_deformation_gradient_of_tet(
-        &mut dfdu,
+    let dfdu = diff_deformation_gradient_of_tet(
         &pos_ref[0],
         &pos_ref[1],
         &pos_ref[2],
@@ -149,11 +142,12 @@ pub fn wdwddw_invertible_fem(
     let (u0, s0, v0) = svd(&f0, 30);
     let diff = svd_differential(u0, s0, v0);
     let (w0, p0, dpdf) = diff_piola_kirchhoff1st(&u0, &s0, &v0, &diff, neohook);
-    
+
     for ino in 0..4 {
         for i in 0..3 {
-            dw[ino][i] =
-                p0[3 * i] * dfdu[ino][0] + p0[3 * i + 1] * dfdu[ino][1] + p0[3 * i + 2] * dfdu[ino][2];
+            dw[ino][i] = p0[3 * i] * dfdu[ino][0]
+                + p0[3 * i + 1] * dfdu[ino][1]
+                + p0[3 * i + 2] * dfdu[ino][2];
         }
         for jno in 0..4 {
             for i in 0..3 {

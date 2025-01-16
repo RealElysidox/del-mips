@@ -24,9 +24,7 @@ pub fn wdwddw_mips(
     triangle_vertices: &[[f64; 3]; 3],
     reference_vertices: &[[f64; 3]; 3],
 ) {
-    let p0 = triangle_vertices[0];
-    let p1 = triangle_vertices[1];
-    let p2 = triangle_vertices[2];
+    let [p0, p1, p2] = triangle_vertices;
     let p_cap0 = reference_vertices[0];
     let p_cap1 = reference_vertices[1];
     let p_cap2 = reference_vertices[2];
@@ -91,16 +89,49 @@ pub fn wdwddw_mips(
 
     let op = |a: &[f64; 3], b: &[f64; 3]| from_outer_product(a, b);
 
-    let ddad0d0 = from_diagonal(&[v12.dot(&v12); 3]).sub(&op(&v12, &v12)).sub(&op(&dad0, &dad0).scale(4.0)).scale(tmp1);
-    let ddad0d1 = from_diagonal(&[v20.dot(&v12); 3]).sub(&op(&v20, &v12.sub(&v01))).sub(&op(&v01, &v20)).sub(&op(&dad0, &dad1).scale(4.0)).scale(tmp1);
-    let ddad0d2 = from_diagonal(&[v01.dot(&v12); 3]).sub(&op(&v01, &v12.sub(&v20))).sub(&op(&v20, &v01)).sub(&op(&dad0, &dad2).scale(4.0)).scale(tmp1);
-    let ddad1d0 = from_diagonal(&[v12.dot(&v20); 3]).sub(&op(&v12, &v20.sub(&v01))).sub(&op(&v01, &v12)).sub(&op(&dad1, &dad0).scale(4.0)).scale(tmp1);
-    let ddad1d1 = from_diagonal(&[v20.dot(&v20); 3]).sub(&op(&v20, &v20)).sub(&op(&dad1, &dad1).scale(4.0)).scale(tmp1);
-    let ddad1d2 = from_diagonal(&[v01.dot(&v20); 3]).sub(&op(&v01, &v20.sub(&v12))).sub(&op(&v12, &v01)).sub(&op(&dad1, &dad2).scale(4.0)).scale(tmp1);
-    let ddad2d0 = from_diagonal(&[v12.dot(&v01); 3]).sub(&op(&v12, &v01.sub(&v20))).sub(&op(&v20, &v12)).sub(&op(&dad2, &dad0).scale(4.0)).scale(tmp1);
-    let ddad2d1 = from_diagonal(&[v20.dot(&v01); 3]).sub(&op(&v20, &v01.sub(&v12))).sub(&op(&v12, &v20)).sub(&op(&dad2, &dad1).scale(4.0)).scale(tmp1);
-    let ddad2d2 = from_diagonal(&[v01.dot(&v01); 3]).sub(&op(&v01, &v01)).sub(&op(&dad2, &dad2).scale(4.0)).scale(tmp1);
-    
+    let ddad0d0 = from_diagonal(&[v12.dot(&v12); 3])
+        .sub(&op(&v12, &v12))
+        .sub(&op(&dad0, &dad0).scale(4.0))
+        .scale(tmp1);
+    let ddad0d1 = from_diagonal(&[v20.dot(&v12); 3])
+        .sub(&op(&v20, &v12.sub(&v01)))
+        .sub(&op(&v01, &v20))
+        .sub(&op(&dad0, &dad1).scale(4.0))
+        .scale(tmp1);
+    let ddad0d2 = from_diagonal(&[v01.dot(&v12); 3])
+        .sub(&op(&v01, &v12.sub(&v20)))
+        .sub(&op(&v20, &v01))
+        .sub(&op(&dad0, &dad2).scale(4.0))
+        .scale(tmp1);
+    let ddad1d0 = from_diagonal(&[v12.dot(&v20); 3])
+        .sub(&op(&v12, &v20.sub(&v01)))
+        .sub(&op(&v01, &v12))
+        .sub(&op(&dad1, &dad0).scale(4.0))
+        .scale(tmp1);
+    let ddad1d1 = from_diagonal(&[v20.dot(&v20); 3])
+        .sub(&op(&v20, &v20))
+        .sub(&op(&dad1, &dad1).scale(4.0))
+        .scale(tmp1);
+    let ddad1d2 = from_diagonal(&[v01.dot(&v20); 3])
+        .sub(&op(&v01, &v20.sub(&v12)))
+        .sub(&op(&v12, &v01))
+        .sub(&op(&dad1, &dad2).scale(4.0))
+        .scale(tmp1);
+    let ddad2d0 = from_diagonal(&[v12.dot(&v01); 3])
+        .sub(&op(&v12, &v01.sub(&v20)))
+        .sub(&op(&v20, &v12))
+        .sub(&op(&dad2, &dad0).scale(4.0))
+        .scale(tmp1);
+    let ddad2d1 = from_diagonal(&[v20.dot(&v01); 3])
+        .sub(&op(&v20, &v01.sub(&v12)))
+        .sub(&op(&v12, &v20))
+        .sub(&op(&dad2, &dad1).scale(4.0))
+        .scale(tmp1);
+    let ddad2d2 = from_diagonal(&[v01.dot(&v01); 3])
+        .sub(&op(&v01, &v01))
+        .sub(&op(&dad2, &dad2).scale(4.0))
+        .scale(tmp1);
+
     let adr = area_cap / area + area / area_cap;
     let ea = adr;
     let dadr = 1.0 / area_cap - area_cap / (area * area);
@@ -116,15 +147,57 @@ pub fn wdwddw_mips(
         energy_gradient[2][idim] = ec * dea * dad2[idim] + ea * dec_d2[idim];
     }
 
-    let dded0d0 = &ddad0d0.scale(ec * dea).add(&op(&dad0, &dad0).scale(ec * ddea)).add(&(from_diagonal(&[t00; 3]).scale(ea))).add(&(op(&dad0, &dec_d0).scale(dea * 2.0)));
-    let dded0d1 = &ddad0d1.scale(ec * dea).add(&op(&dad0, &dad1).scale(ec * ddea)).add(&(from_diagonal(&[t01; 3]).scale(ea))).add(&(op(&dad0, &dec_d1).scale(dea))).add(&(op(&dad1, &dec_d0).scale(dea)));
-    let dded0d2 = &ddad0d2.scale(ec * dea).add(&op(&dad0, &dad2).scale(ec * ddea)).add(&(from_diagonal(&[t02; 3]).scale(ea))).add(&(op(&dad0, &dec_d2).scale(dea))).add(&(op(&dad2, &dec_d0).scale(dea)));
-    let dded1d0 = &ddad1d0.scale(ec * dea).add(&op(&dad1, &dad0).scale(ec * ddea)).add(&(from_diagonal(&[t01; 3]).scale(ea))).add(&(op(&dad1, &dec_d0).scale(dea))).add(&(op(&dad0, &dec_d1).scale(dea)));
-    let dded1d1 = &ddad1d1.scale(ec * dea).add(&op(&dad1, &dad1).scale(ec * ddea)).add(&(from_diagonal(&[t11; 3]).scale(ea))).add(&(op(&dad1, &dec_d1).scale(dea * 2.0)));
-    let dded1d2 = &ddad1d2.scale(ec * dea).add(&op(&dad1, &dad2).scale(ec * ddea)).add(&(from_diagonal(&[t12; 3]).scale(ea))).add(&(op(&dad1, &dec_d2).scale(dea))).add(&(op(&dad2, &dec_d1).scale(dea)));
-    let dded2d0 = &ddad2d0.scale(ec * dea).add(&op(&dad2, &dad0).scale(ec * ddea)).add(&(from_diagonal(&[t02; 3]).scale(ea))).add(&(op(&dad2, &dec_d0).scale(dea))).add(&(op(&dad0, &dec_d2).scale(dea)));
-    let dded2d1 = &ddad2d1.scale(ec * dea).add(&op(&dad2, &dad1).scale(ec * ddea)).add(&(from_diagonal(&[t12; 3]).scale(ea))).add(&(op(&dad2, &dec_d1).scale(dea))).add(&(op(&dad1, &dec_d2).scale(dea)));
-    let dded2d2 = &ddad2d2.scale(ec * dea).add(&op(&dad2, &dad2).scale(ec * ddea)).add(&(from_diagonal(&[t22; 3]).scale(ea))).add(&(op(&dad2, &dec_d2).scale(dea * 2.0)));
+    let dded0d0 = &ddad0d0
+        .scale(ec * dea)
+        .add(&op(&dad0, &dad0).scale(ec * ddea))
+        .add(&(from_diagonal(&[t00; 3]).scale(ea)))
+        .add(&(op(&dad0, &dec_d0).scale(dea * 2.0)));
+    let dded0d1 = &ddad0d1
+        .scale(ec * dea)
+        .add(&op(&dad0, &dad1).scale(ec * ddea))
+        .add(&(from_diagonal(&[t01; 3]).scale(ea)))
+        .add(&(op(&dad0, &dec_d1).scale(dea)))
+        .add(&(op(&dad1, &dec_d0).scale(dea)));
+    let dded0d2 = &ddad0d2
+        .scale(ec * dea)
+        .add(&op(&dad0, &dad2).scale(ec * ddea))
+        .add(&(from_diagonal(&[t02; 3]).scale(ea)))
+        .add(&(op(&dad0, &dec_d2).scale(dea)))
+        .add(&(op(&dad2, &dec_d0).scale(dea)));
+    let dded1d0 = &ddad1d0
+        .scale(ec * dea)
+        .add(&op(&dad1, &dad0).scale(ec * ddea))
+        .add(&(from_diagonal(&[t01; 3]).scale(ea)))
+        .add(&(op(&dad1, &dec_d0).scale(dea)))
+        .add(&(op(&dad0, &dec_d1).scale(dea)));
+    let dded1d1 = &ddad1d1
+        .scale(ec * dea)
+        .add(&op(&dad1, &dad1).scale(ec * ddea))
+        .add(&(from_diagonal(&[t11; 3]).scale(ea)))
+        .add(&(op(&dad1, &dec_d1).scale(dea * 2.0)));
+    let dded1d2 = &ddad1d2
+        .scale(ec * dea)
+        .add(&op(&dad1, &dad2).scale(ec * ddea))
+        .add(&(from_diagonal(&[t12; 3]).scale(ea)))
+        .add(&(op(&dad1, &dec_d2).scale(dea)))
+        .add(&(op(&dad2, &dec_d1).scale(dea)));
+    let dded2d0 = &ddad2d0
+        .scale(ec * dea)
+        .add(&op(&dad2, &dad0).scale(ec * ddea))
+        .add(&(from_diagonal(&[t02; 3]).scale(ea)))
+        .add(&(op(&dad2, &dec_d0).scale(dea)))
+        .add(&(op(&dad0, &dec_d2).scale(dea)));
+    let dded2d1 = &ddad2d1
+        .scale(ec * dea)
+        .add(&op(&dad2, &dad1).scale(ec * ddea))
+        .add(&(from_diagonal(&[t12; 3]).scale(ea)))
+        .add(&(op(&dad2, &dec_d1).scale(dea)))
+        .add(&(op(&dad1, &dec_d2).scale(dea)));
+    let dded2d2 = &ddad2d2
+        .scale(ec * dea)
+        .add(&op(&dad2, &dad2).scale(ec * ddea))
+        .add(&(from_diagonal(&[t22; 3]).scale(ea)))
+        .add(&(op(&dad2, &dec_d2).scale(dea * 2.0)));
 
     for idim in 0..3 {
         for jdim in 0..3 {

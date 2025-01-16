@@ -1,3 +1,5 @@
+#[allow(non_snake_case)]
+
 #[cfg(test)]
 mod tests {
     use del_mips::fem_mips::*;
@@ -48,13 +50,15 @@ mod tests {
                     {
                         let val0 = (e1 - e) / EPS;
                         let val1 = de[ino][idim];
-                        assert!((val0 - val1).abs() < 5.0e-2 * (1.0 + val1.abs())); // minimum threshold to pass the test. 4.0e-2 is too small. C++ version is 1.0e-2.
+                        assert!((val0 - val1).abs() < 5.0e-2 * (1.0 + val1.abs()));
+                        // minimum threshold to pass the test. 4.0e-2 is too small. C++ version is 1.0e-2.
                     }
                     for jno in 0..3 {
                         for jdim in 0..3 {
                             let val0 = (de1[jno][jdim] - de[jno][jdim]) / EPS;
                             let val1 = dde[jno][ino][jdim][idim];
-                            assert!((val0 - val1).abs() < 8.0e-1 * (1.0 + val1.abs())); // minimum threshold to pass the test. 3.5e-1 is too small. C++ version is 3.0e-2.
+                            assert!((val0 - val1).abs() < 8.0e-1 * (1.0 + val1.abs()));
+                            // minimum threshold to pass the test. 3.5e-1 is too small. C++ version is 3.0e-2.
                         }
                     }
                 }
