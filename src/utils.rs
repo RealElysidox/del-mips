@@ -1,5 +1,6 @@
-use std::ops::{Add, Mul, Sub};
+#![allow(clippy::needless_range_loop)]
 
+use std::ops::{Add, Mul, Sub};
 use rand::{self, prelude::Distribution, SeedableRng};
 
 pub fn random_2d_matrix<T, const N: usize, const M: usize>(
@@ -78,7 +79,7 @@ where
         + (v1[1] - v0[1]) * ((v2[2] - v0[2]) * (v3[0] - v0[0]) - (v3[2] - v0[2]) * (v2[0] - v0[0]))
         + (v1[2] - v0[2]) * ((v2[0] - v0[0]) * (v3[1] - v0[1]) - (v3[0] - v0[0]) * (v2[1] - v0[1]));
 
-    v * 0.16666666666666666666666666666667
+    v * 0.16666666666666667
 }
 
 pub fn random_vec() -> [f64; 3] {

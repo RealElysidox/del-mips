@@ -12,21 +12,11 @@ pub fn mat3_3base_of_tet(
     transpose_mat3x3(&[v1, v2, v3])
 }
 
-pub fn deformation_gradient_of_tet(
-    p1: &[f64; 3],
-    p2: &[f64; 3],
-    p3: &[f64; 3],
-    p4: &[f64; 3],
-    q1: &[f64; 3],
-    q2: &[f64; 3],
-    q3: &[f64; 3],
-    q4: &[f64; 3],
-) -> [[f64; 3]; 3] {
-    let p_base = mat3_3base_of_tet(p1, p2, p3, p4);
-    let q_base = mat3_3base_of_tet(q1, q2, q3, q4);
+pub fn deformation_gradient_of_tet(p: &[[f64; 3]; 4], q: &[[f64; 3]; 4]) -> [[f64; 3]; 3] {
+    let p_base = mat3_3base_of_tet(&p[0], &p[1], &p[2], &p[3]);
+    let q_base = mat3_3base_of_tet(&q[0], &q[1], &q[2], &q[3]);
     let p_base_inv = inverse_mat3(&p_base);
-    let f = mul_mat3x3(&q_base, &p_base_inv);
-    f
+    mul_mat3x3(&q_base, &p_base_inv)
 }
 
 pub fn diff_deformation_gradient_of_tet(

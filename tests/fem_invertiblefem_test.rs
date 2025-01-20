@@ -34,16 +34,7 @@ mod tests {
                 add_vec(&pos0_cap[3], &scale_vec(&random_vec(), 0.2)),
             ];
 
-            let f0 = deformation_gradient_of_tet(
-                &pos0_cap[0],
-                &pos0_cap[1],
-                &pos0_cap[2],
-                &pos0_cap[3],
-                &pos0[0],
-                &pos0[1],
-                &pos0[2],
-                &pos0[3],
-            );
+            let f0 = deformation_gradient_of_tet(&pos0_cap, &pos0);
             let dfdu = diff_deformation_gradient_of_tet(
                 &pos0_cap[0],
                 &pos0_cap[1],
@@ -107,16 +98,7 @@ mod tests {
                 add_vec(&pos0_cap[3], &scale_vec(&random_vec(), 0.2)),
             ];
 
-            let f0 = deformation_gradient_of_tet(
-                &pos0_cap[0],
-                &pos0_cap[1],
-                &pos0_cap[2],
-                &pos0_cap[3],
-                &pos0[0],
-                &pos0[1],
-                &pos0[2],
-                &pos0[3],
-            );
+            let f0 = deformation_gradient_of_tet(&pos0_cap, &pos0);
 
             let f0_flat: [f64; 9] = [
                 f0[0][0], f0[0][1], f0[0][2], f0[1][0], f0[1][1], f0[1][2], f0[2][0], f0[2][1],

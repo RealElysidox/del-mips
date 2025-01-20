@@ -1,4 +1,6 @@
 #![allow(non_snake_case)]
+#![allow(clippy::type_complexity)]
+#![allow(clippy::needless_range_loop)]
 
 use del_geo_core::mat3_col_major::Mat3ColMajor;
 use del_geo_core::mat3_row_major::*;
@@ -11,23 +13,14 @@ fn skew(v: &[f64; 3]) -> Mat3 {
     [0.0, -v[2], v[1], v[2], 0.0, -v[0], -v[1], v[0], 0.0]
 }
 
-fn deformation_gradient_of_tet(
-    pos0: &[f64; 3],
-    pos1: &[f64; 3],
-    pos2: &[f64; 3],
-    pos3: &[f64; 3],
-    Pos0: &[f64; 3],
-    Pos1: &[f64; 3],
-    Pos2: &[f64; 3],
-    Pos3: &[f64; 3],
-) -> Mat3 {
-    let dx10 = pos1.sub(&pos0);
-    let dx20 = pos2.sub(&pos0);
-    let dx30 = pos3.sub(&pos0);
+fn deformation_gradient_of_tet(pos: &[[f64; 3]; 4], Pos: &[[f64; 3]; 4]) -> Mat3 {
+    let dx10 = pos[1].sub(&pos[0]);
+    let dx20 = pos[2].sub(&pos[0]);
+    let dx30 = pos[3].sub(&pos[0]);
 
-    let dX10 = Pos1.sub(&Pos0);
-    let dX20 = Pos2.sub(&Pos0);
-    let dX30 = Pos3.sub(&Pos0);
+    let dX10 = Pos[1].sub(&Pos[0]);
+    let dX20 = Pos[2].sub(&Pos[0]);
+    let dX30 = Pos[3].sub(&Pos[0]);
 
     let mat_x = [
         dx10[0], dx20[0], dx30[0], dx10[1], dx20[1], dx30[1], dx10[2], dx20[2], dx30[2],
@@ -82,7 +75,7 @@ pub fn diff_piola_kirchhoff1st(
 ) -> (f64, Mat3, [[[[f64; 3]; 3]; 3]; 3]) {
     let (w0, dwdl0, ddwddl0) = neohook(s0[0], s0[4], s0[8]);
     let t0 = [dwdl0[0], 0.0, 0.0, 0.0, dwdl0[1], 0.0, 0.0, 0.0, dwdl0[2]];
-    let p0 = u0.mult_mat_row_major(&t0.mult_mat_row_major(&transpose(&v0)));
+    let p0 = u0.mult_mat_row_major(&t0.mult_mat_row_major(&transpose(v0)));
     let mut dpdf = [[[[0.0; 3]; 3]; 3]; 3];
     for i in 0..3 {
         for j in 0..3 {
@@ -99,9 +92,9 @@ pub fn diff_piola_kirchhoff1st(
             let dt = [t0_0, 0.0, 0.0, 0.0, t0_1, 0.0, 0.0, 0.0, t0_2];
 
             let dp = du
-                .mult_mat_row_major(&t0.mult_mat_row_major(&transpose(&v0)))
+                .mult_mat_row_major(&t0.mult_mat_row_major(&transpose(v0)))
                 .add(
-                    &u0.mult_mat_row_major(&dt.mult_mat_row_major(&transpose(&v0)))
+                    &u0.mult_mat_row_major(&dt.mult_mat_row_major(&transpose(v0)))
                         .add(&u0.mult_mat_row_major(&(t0.mult_mat_row_major(&transpose(&dv))))),
                 );
             for k in 0..3 {
@@ -122,14 +115,8 @@ pub fn wdwddw_invertible_fem(
     let mut dw = [[0.0; 3]; 4];
     let mut ddw = [[[[0.0; 3]; 3]; 4]; 4];
     let f0 = deformation_gradient_of_tet(
-        &pos[0],
-        &pos[1],
-        &pos[2],
-        &pos[3],
-        &pos_ref[0],
-        &pos_ref[1],
-        &pos_ref[2],
-        &pos_ref[3],
+        pos,
+        pos_ref,
     );
 
     let dfdu = diff_deformation_gradient_of_tet(&pos_ref[0], &pos_ref[1], &pos_ref[2], &pos_ref[3]);

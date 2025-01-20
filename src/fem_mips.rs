@@ -29,9 +29,9 @@ pub fn wdwddw_mips(
     let p_cap1 = reference_vertices[1];
     let p_cap2 = reference_vertices[2];
 
-    let v01 = p1.sub(&p0);
-    let v12 = p2.sub(&p1);
-    let v20 = p0.sub(&p2);
+    let v01 = p1.sub(p0);
+    let v12 = p2.sub(p1);
+    let v20 = p0.sub(p2);
 
     let n = cross(&v01, &v20);
     let area = norm(&n) * 0.5;
