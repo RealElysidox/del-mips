@@ -114,10 +114,7 @@ pub fn wdwddw_invertible_fem(
 ) -> (f64, [[f64; 3]; 4], [[[[f64; 3]; 3]; 4]; 4]) {
     let mut dw = [[0.0; 3]; 4];
     let mut ddw = [[[[0.0; 3]; 3]; 4]; 4];
-    let f0 = deformation_gradient_of_tet(
-        pos,
-        pos_ref,
-    );
+    let f0 = deformation_gradient_of_tet(pos, pos_ref);
 
     let dfdu = diff_deformation_gradient_of_tet(&pos_ref[0], &pos_ref[1], &pos_ref[2], &pos_ref[3]);
 

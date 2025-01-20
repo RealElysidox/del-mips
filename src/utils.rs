@@ -1,7 +1,7 @@
 #![allow(clippy::needless_range_loop)]
 
-use std::ops::{Add, Mul, Sub};
 use rand::{self, prelude::Distribution, SeedableRng};
+use std::ops::{Add, Mul, Sub};
 
 pub fn random_2d_matrix<T, const N: usize, const M: usize>(
     a: &mut [[T; M]; N],
