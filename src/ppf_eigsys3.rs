@@ -57,8 +57,19 @@ fn hessian_energy_s(a: f64, b: f64, c: f64, model: &str) -> [f64; 9] {
         .map(|i| 2.0 * (i + 1) as f64 * (sqr(a) + sqr(b) + sqr(c) - 3.0).powi(i))
         .sum();
     let yeoh_coeff_rr = (0..2)
-        .map(|i| 4.0 * (i + 1) as f64 * (i + 2) as f64 * (sqr(a) + sqr(b) + sqr(c) - 3.0).powi(i)).sum();
-    let rr = [a * a, a * b, a* c, b * a, b * b, b * c, c * a, c * b, c * c];
+        .map(|i| 4.0 * (i + 1) as f64 * (i + 2) as f64 * (sqr(a) + sqr(b) + sqr(c) - 3.0).powi(i))
+        .sum();
+    let rr = [
+        a * a,
+        a * b,
+        a * c,
+        b * a,
+        b * b,
+        b * c,
+        c * a,
+        c * b,
+        c * c,
+    ];
     // row major order
     match model {
         "ARAP" => [2.0, 0.0, 0.0, 0.0, 2.0, 0.0, 0.0, 0.0, 2.0],
@@ -109,7 +120,9 @@ fn hessian_energy_s(a: f64, b: f64, c: f64, model: &str) -> [f64; 9] {
                 })
                 .sum(),
         ],
-        "Yeoh" => rr.scale(yeoh_coeff_rr).add(&from_identity().scale(yeoh_coeff_i)),
+        "Yeoh" => rr
+            .scale(yeoh_coeff_rr)
+            .add(&from_identity().scale(yeoh_coeff_i)),
         _ => [0.0; 9],
     }
 }
